@@ -28,7 +28,6 @@
     { id: 'wenwriting', name: '彣書', weight: 400 },
     { id: 'tsuhsianti', name: '粗線體', weight: 700 },
     { id: 'lebifont', name: '樂筆手寫體', weight: 600 },
-    { id: 'chalkdayfont', name: '值日生粉筆體', weight: 400 }
   ];
 
   var PHRASES = [
@@ -82,6 +81,10 @@
   var COMBO_BONUS = 20;
   var STORAGE_KEY = 'jf-font-master-best';
   var TITLE_TEXT = '手寫字體辨識大師';
+  var UI_FONT = 'matsunoha-tc';
+  // 由 JS 動態產生的介面文字，需先預載介面字體的字符
+  var UI_DYNAMIC_TEXT = '【】最佳紀錄：分答對了！+（連擊！）可惜！時間到！正確答案是「」看結果下一題⏎✓✗你選了超時未作答' +
+    '成績已複製到剪貼簿字型服務載入失敗，可能會以預設字型顯示開始挑戰0123456789/s·';
   var RANKS = [
     { min: 0.9, title: '手寫字體辨識大師', desc: '字型的靈魂你都看得見，justfont 應該聘請你！' },
     { min: 0.7, title: '字型達人', desc: '眼力驚人！多數手寫字都逃不過你的法眼。' },
@@ -165,6 +168,15 @@
       span.textContent = text;
       box.appendChild(span);
     });
+
+    var uiSpan = document.createElement('span');
+    uiSpan.className = UI_FONT;
+    uiSpan.textContent = document.querySelector('.app').textContent.replace(/\s+/g, '') +
+      document.title + allNames + UI_DYNAMIC_TEXT +
+      Object.keys(DIFFICULTIES).map(function (k) { return DIFFICULTIES[k].label; }).join('') +
+      RANKS.map(function (r) { return r.desc; }).join('');
+    box.appendChild(uiSpan);
+
     document.body.appendChild(box);
   }
 
