@@ -88,8 +88,9 @@
     return WEIGHT_FAMILIES.filter(function (fam) { return difficulty === 'master' || !fam.masterOnly; });
   }
 
-  // 精選模式額外用到、其他模式沒有的字體
-  var FEATURED_EXTRA_FONTS = [
+  // 精選與台文模式額外用到、其他模式沒有的字體
+  var EXTRA_FONTS = [
+    { id: 'jf-bunguan', name: 'jf 文源楷書', weight: 400 },
     { id: 'jf-kamabit', name: '柑仔蜜', weight: 700, fallback: 'sans' },
     { id: 'matsunoha-tc', name: '松韻', weight: 300, fallback: 'serif' },
     { id: 'tearsfont', name: '淚體', weight: 300 },
@@ -101,7 +102,7 @@
     { id: 'lithue', name: '日花', weight: 400, fallback: 'sans' }
   ];
 
-  var ALL_FONTS = HANDWRITING_FONTS.concat(WEIGHT_FONTS, FEATURED_EXTRA_FONTS);
+  var ALL_FONTS = HANDWRITING_FONTS.concat(WEIGHT_FONTS, EXTRA_FONTS);
 
   function findFont(id) {
     return ALL_FONTS.filter(function (f) { return f.id === id; })[0];
@@ -113,9 +114,9 @@
   }
 
   // standardId 是輕鬆難度使用的標準字重，未填則用第一個
-  function featuredFamily(name, ids, standardId) {
+  function fontFamily(name, ids, standardId) {
     return {
-      id: 'featured-' + ids[0],
+      id: 'family-' + ids[0],
       name: name,
       fonts: ids.map(findFont),
       standard: findFont(standardId || ids[0])
@@ -123,20 +124,58 @@
   }
 
   var FEATURED_FAMILIES = [
-    featuredFamily('蘭陽黑體', weightFamilyIds('jf-lanyanghei'), 'jf-lanyanghei-bold'),
-    featuredFamily('蘭陽明體', weightFamilyIds('jf-lanyangming'), 'jf-lanyangming-regular'),
-    featuredFamily('金萱', weightFamilyIds('jf-jinxuan'), 'jf-jinxuan-regular'),
-    featuredFamily('金萱那提', weightFamilyIds('jf-jinxuanlatte'), 'jf-jinxuanlatte-regular'),
-    featuredFamily('柑仔蜜', ['jf-kamabit']),
-    featuredFamily('松韻', ['matsunoha-tc']),
-    featuredFamily('淚體', ['tearsfont']),
-    featuredFamily('凝書體', ['creamfont']),
-    featuredFamily('臺灣道路體', ['twroadfont']),
-    featuredFamily('激燃體', ['burnfont', 'burnfont_italic']),
-    featuredFamily('粗線體', ['tsuhsianti']),
-    featuredFamily('粒線體', ['lihsianti']),
-    featuredFamily('胖西手寫體', ['justinbeaverfont-slim', 'justinbeaverfont-fluffy']),
-    featuredFamily('日花', ['lithue'])
+    fontFamily('蘭陽黑體', weightFamilyIds('jf-lanyanghei'), 'jf-lanyanghei-bold'),
+    fontFamily('蘭陽明體', weightFamilyIds('jf-lanyangming'), 'jf-lanyangming-regular'),
+    fontFamily('金萱', weightFamilyIds('jf-jinxuan'), 'jf-jinxuan-regular'),
+    fontFamily('金萱那提', weightFamilyIds('jf-jinxuanlatte'), 'jf-jinxuanlatte-regular'),
+    fontFamily('柑仔蜜', ['jf-kamabit']),
+    fontFamily('松韻', ['matsunoha-tc']),
+    fontFamily('淚體', ['tearsfont']),
+    fontFamily('凝書體', ['creamfont']),
+    fontFamily('臺灣道路體', ['twroadfont']),
+    fontFamily('激燃體', ['burnfont', 'burnfont_italic']),
+    fontFamily('粗線體', ['tsuhsianti']),
+    fontFamily('粒線體', ['lihsianti']),
+    fontFamily('胖西手寫體', ['justinbeaverfont-slim', 'justinbeaverfont-fluffy']),
+    fontFamily('日花', ['lithue'])
+  ];
+
+  var TAIWANESE_FAMILIES = [
+    fontFamily('jf 蘭陽明體', weightFamilyIds('jf-lanyangming'), 'jf-lanyangming-regular'),
+    fontFamily('jf 蘭陽黑體', weightFamilyIds('jf-lanyanghei'), 'jf-lanyanghei-bold'),
+    fontFamily('jf 金萱', weightFamilyIds('jf-jinxuan'), 'jf-jinxuan-regular'),
+    fontFamily('jf 金萱那提', weightFamilyIds('jf-jinxuanlatte'), 'jf-jinxuanlatte-regular'),
+    fontFamily('jf 文源楷書', ['jf-bunguan']),
+    fontFamily('jf 柑仔蜜', ['jf-kamabit']),
+    fontFamily('淚體', ['tearsfont']),
+    fontFamily('凝書體', ['creamfont']),
+    fontFamily('臺灣道路體', ['twroadfont']),
+    fontFamily('日花', ['lithue']),
+    fontFamily('粗線體', ['tsuhsianti']),
+    fontFamily('胖西手寫體', ['justinbeaverfont-slim', 'justinbeaverfont-fluffy']),
+    fontFamily('阿瑪手寫體', ['amafont']),
+    fontFamily('宜農手寫體', ['ennofont']),
+    fontFamily('樂筆手寫體', ['lebifont']),
+    fontFamily('玫怡手寫體', ['meiyifont']),
+    fontFamily('追奇手寫體', ['drechifont']),
+    fontFamily('朵朵手寫體', ['duoduofont'])
+  ];
+
+  // 含組合附加符號（如 o͘、a̍）與擴充區漢字（如 𬦰、𠢕），修改時請保留原字元
+  var TAIWANESE_PHRASES = [
+    '好--ah，súi--ah，咱Tâi-oân！',
+    '我會當kā玻璃吞--lo̍h-khì而且bē傷身體',
+    '請手扞好勢，跤徛予在',
+    'TÂI-OÂN HÚ-SIÂᴺ KÀU-HŌE-PÒ',
+    '買賣算分，相請無論',
+    'Âng súi, o͘ tōa-pān',
+    'Ba̍k-tsiu khuànn-kuân, bô khuànn-kē.',
+    '無通生食，哪有通曝乾',
+    '教囝學泅，毋通教囝𬦰樹',
+    '人𠢕，天咧做對頭',
+    '扭掠 hô͘-lî 跳過 pîn-tōaⁿ ê 狗仔',
+    '收瀾收 hōo 焦，hōo 你生一 ê 有𡳞脬',
+    'Bē-hiáu thì-thâu, tú-tio̍h hô͘-chhiu.'
   ];
 
   var PHRASES = [
@@ -200,6 +239,25 @@
         { min: 0, title: '字體路人', desc: '每款字都長得很像？沒關係，這正是認識字體的開始！' }
       ]
     },
+    taiwanese: {
+      label: '台文字體辨識',
+      hint: '這是哪一款字體？',
+      masterHint: '這是哪一款字體、哪一個字重？',
+      times: { easy: 10, normal: 10, master: 10 },
+      diffDesc: { easy: '標準字重・選字體', normal: '多種字重・選字體', master: '多種字重・選字體與字重' },
+      rules: [
+        '【台文字體辨識】題庫收錄 {taiwanese} 款支援台文的 justfont 字體，題目是台語漢字與羅馬字混寫的句子，請選出是用哪一款字體寫成，每題限時 10 秒。',
+        '輕鬆難度只會以標準字重出題；標準難度會出現各種字重，但只要答出字體名稱；大師難度的選項會細分到字重，同一套字體的不同字重也可能同時出現！'
+      ],
+      shareTail: '你認得出幾款台文字體？',
+      ranks: [
+        { min: 0.9, title: '台文字體辨識大師', desc: '漢字、白話字、台羅混寫都難不倒你，眼力 tsiok 好！' },
+        { min: 0.7, title: '台文字體達人', desc: '連羅馬字的聲調符號都看得仔細，字體細節逃不過你的法眼。' },
+        { min: 0.5, title: '台文字體觀察家', desc: '已經抓到各款字體寫台文時的個性了，繼續加油！' },
+        { min: 0.3, title: '台文字體新手', desc: '開始分得出字體之間的差異了，多玩幾次會更準喔。' },
+        { min: 0, title: '台文字體路人', desc: '每款字都長得很像？沒關係，這正是認識台文字體的開始！' }
+      ]
+    },
     handwriting: {
       label: '手寫字體辨識',
       hint: '這是哪一款字體？',
@@ -238,7 +296,12 @@
     }
   };
 
-  MODES.featured.build = buildFeaturedQuestions;
+  MODES.featured.build = function (difficulty) {
+    return buildFamilyQuestions(FEATURED_FAMILIES, PHRASES, MODES.featured, difficulty);
+  };
+  MODES.taiwanese.build = function (difficulty) {
+    return buildFamilyQuestions(TAIWANESE_FAMILIES, TAIWANESE_PHRASES, MODES.taiwanese, difficulty);
+  };
   MODES.handwriting.build = buildHandwritingQuestions;
   MODES.weight.build = buildWeightQuestions;
 
@@ -256,7 +319,9 @@
   var $ = function (id) { return document.getElementById(id); };
 
   var els = {
+    app: $('app'),
     screens: {
+      loading: $('screenLoading'),
       start: $('screenStart'),
       game: $('screenGame'),
       result: $('screenResult')
@@ -350,6 +415,7 @@
     var box = document.createElement('div');
     box.id = 'jf-preload';
     box.setAttribute('aria-hidden', 'true');
+    box.style.cssText = 'position:absolute;left:-99999px;top:0;width:1px;overflow:hidden;opacity:0;pointer-events:none;white-space:nowrap;';
     var addSpan = function (className, text) {
       var span = document.createElement('span');
       span.className = className;
@@ -362,13 +428,17 @@
       var text = PHRASES.join('') + names(fam.fonts) + TITLE_TEXT + '字';
       fam.fonts.forEach(function (f) { addSpan(f.id, text); });
     });
-    FEATURED_EXTRA_FONTS.forEach(function (f) { addSpan(f.id, PHRASES.join('') + f.name + TITLE_TEXT + '字'); });
+    EXTRA_FONTS.forEach(function (f) { addSpan(f.id, PHRASES.join('') + f.name + TITLE_TEXT + '字'); });
+    var taiwaneseText = TAIWANESE_PHRASES.join('') + names(TAIWANESE_FAMILIES) + '台文';
+    TAIWANESE_FAMILIES.forEach(function (fam) {
+      fam.fonts.forEach(function (f) { addSpan(f.id, taiwaneseText); });
+    });
 
     addSpan(UI_FONT, document.querySelector('.app').textContent.replace(/\s+/g, '') +
       document.title + names(ALL_FONTS) + UI_DYNAMIC_TEXT +
       collectStrings(MODES) + collectStrings(DIFFICULTY_LABELS) +
       WEIGHT_FAMILIES.map(function (fam) { return fam.title; }).join('') +
-      names(FEATURED_FAMILIES));
+      names(FEATURED_FAMILIES) + names(TAIWANESE_FAMILIES));
 
     document.body.appendChild(box);
   }
@@ -381,9 +451,7 @@
         var cls = html.className;
         if (/\bjf-active\b/.test(cls) || /\bjf-inactive\b/.test(cls) || Date.now() - started > 10000) {
           var ok = /\bjf-active\b/.test(cls);
-          // 給瀏覽器一點時間實際下載字型檔
-          var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-          Promise.race([fontsReady, delay(4000)]).then(function () { resolve(ok); });
+          waitHomeFonts().then(function () { resolve(ok); });
           return;
         }
         setTimeout(check, 150);
@@ -391,10 +459,21 @@
     });
   }
 
+  // 首頁會立刻看到的字：介面字、標題六字、模式卡片示意字
+  function waitHomeFonts() {
+    var loads = [ensureFontLoaded({ id: UI_FONT, family: UI_FONT, weight: 300 }, '字體辨識大師選擇模式開始挑戰輕鬆標準大師')];
+    var nodes = document.querySelectorAll('#titleText span, .mode-glyphs span');
+    Array.prototype.forEach.call(nodes, function (node) {
+      var font = findFont(node.className.trim().split(/\s+/)[0]);
+      if (font) loads.push(ensureFontLoaded(font, node.textContent));
+    });
+    return Promise.race([Promise.all(loads), delay(4000)]);
+  }
+
   function ensureFontLoaded(font, text) {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
     var spec = font.weight + ' 48px "' + familyOf(font) + '"';
-    return Promise.race([document.fonts.load(spec, text).catch(function () {}), delay(1500)]);
+    return Promise.race([document.fonts.load(spec, text).catch(function () {}), delay(2500)]);
   }
 
   // ---------- 工具 ----------
@@ -488,7 +567,8 @@
       weights: WEIGHT_FONTS.length,
       weightBasic: titles(weightFamiliesFor('normal')),
       weightMasterOnly: titles(WEIGHT_FAMILIES.filter(function (fam) { return fam.masterOnly; })),
-      featured: FEATURED_FAMILIES.length
+      featured: FEATURED_FAMILIES.length,
+      taiwanese: TAIWANESE_FAMILIES.length
     };
     Array.prototype.forEach.call(els.diffBtns, function (btn) {
       btn.querySelector('.diff-desc').textContent = fill(mode.diffDesc[btn.dataset.diff], values);
@@ -571,6 +651,7 @@
       return {
         font: font,
         answer: font,
+        note: '',
         phrase: phrases[i % phrases.length],
         hint: MODES.handwriting.hint,
         options: shuffle([font].concat(distractors))
@@ -579,21 +660,24 @@
   }
 
   // 輕鬆、標準的選項是字體家族名稱，揭曉時以該家族的標準字重（答案則用題目的字重）顯示；
-  // 大師的選項是個別字重，並混入同家族的其他字重
-  function buildFeaturedQuestions(difficulty) {
-    var families = shuffle(FEATURED_FAMILIES).slice(0, TOTAL_ROUNDS);
-    var phrases = shuffle(PHRASES);
+  // 大師的選項是個別字重，並混入同家族的其他字重；單一字重的家族在選項中一律顯示家族名稱
+  function buildFamilyQuestions(allFamilies, allPhrases, mode, difficulty) {
+    var families = shuffle(allFamilies).slice(0, TOTAL_ROUNDS);
+    var phrases = shuffle(allPhrases);
+    var fontOption = function (fam, font) {
+      return { id: font.id, name: fam.fonts.length > 1 ? font.name : fam.name };
+    };
     return families.map(function (fam, i) {
       var font = difficulty === 'easy' ? fam.standard : pick(fam.fonts);
-      var others = shuffle(FEATURED_FAMILIES.filter(function (f) { return f !== fam; }));
+      var others = shuffle(allFamilies.filter(function (f) { return f !== fam; }));
       var answer, options;
 
       if (difficulty === 'master') {
         var siblingCount = Math.min(fam.fonts.length - 1, pick([1, 2]));
         var siblings = shuffle(fam.fonts.filter(function (f) { return f !== font; })).slice(0, siblingCount);
-        var rest = others.slice(0, 3 - siblings.length).map(function (f) { return pick(f.fonts); });
-        answer = font;
-        options = [font].concat(siblings, rest);
+        var rest = others.slice(0, 3 - siblings.length).map(function (f) { return fontOption(f, pick(f.fonts)); });
+        answer = fontOption(fam, font);
+        options = [answer].concat(siblings.map(function (f) { return fontOption(fam, f); }), rest);
       } else {
         options = [fam].concat(others.slice(0, 3)).map(function (f) {
           return { id: f.id, name: f.name, cls: f === fam ? font.id : f.standard.id };
@@ -604,8 +688,9 @@
       return {
         font: font,
         answer: answer,
+        note: difficulty !== 'master' && fam.fonts.length > 1 ? '（' + font.name + '）' : '',
         phrase: phrases[i % phrases.length],
-        hint: difficulty === 'master' ? MODES.featured.masterHint : MODES.featured.hint,
+        hint: difficulty === 'master' ? mode.masterHint : mode.hint,
         options: shuffle(options)
       };
     });
@@ -668,6 +753,7 @@
       return {
         font: font,
         answer: font,
+        note: '',
         phrase: phrases[i % phrases.length],
         hint: fill(MODES.weight.hint, { family: fam.title }),
         options: indexes.map(function (idx) { return fam.fonts[idx]; })
@@ -788,6 +874,7 @@
     state.history.push({
       font: q.font,
       answer: q.answer,
+      note: q.note,
       phrase: q.phrase,
       chosen: chosenId ? q.options.filter(function (f) { return f.id === chosenId; })[0] : null,
       correct: correct,
@@ -820,17 +907,11 @@
     } else {
       sfx.wrong();
       els.feedback.className = 'feedback bad';
-      els.feedback.textContent = (chosenId ? '可惜！' : '時間到！') + '正確答案是「' + q.answer.name + '」' +
-        variantNote(q.answer, q.font);
+      els.feedback.textContent = (chosenId ? '可惜！' : '時間到！') + '正確答案是「' + q.answer.name + '」' + q.note;
       els.nextBtn.hidden = false;
       els.nextBtn.textContent = state.round + 1 >= TOTAL_ROUNDS ? '看結果 ⏎' : '下一題 ⏎';
       els.nextBtn.focus({ preventScroll: true });
     }
-  }
-
-  // 答案只到字體家族時，補上題目實際使用的字重
-  function variantNote(answer, font) {
-    return answer.name === font.name ? '' : '（' + font.name + '）';
   }
 
   function floatScore(text) {
@@ -896,7 +977,7 @@
       name.textContent = h.answer.name;
       meta.appendChild(document.createTextNode(h.correct ? '✓ ' : '✗ '));
       meta.appendChild(name);
-      meta.appendChild(document.createTextNode(variantNote(h.answer, h.font)));
+      meta.appendChild(document.createTextNode(h.note));
       if (!h.correct) {
         meta.appendChild(document.createTextNode(h.chosen ? '（你選了：' + h.chosen.name + '）' : '（超時未作答）'));
       }
@@ -996,8 +1077,8 @@
   bindEvents();
 
   waitForFonts().then(function (ok) {
-    els.startBtn.disabled = false;
-    els.startBtn.textContent = '開始挑戰';
+    els.app.classList.remove('is-loading');
+    showScreen('start');
     if (!ok) toast('字型服務載入失敗，可能會以預設字型顯示');
   });
 })();
